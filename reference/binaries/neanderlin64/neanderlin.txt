@@ -1,0 +1,151 @@
+NEANDERWIN - Resumo operacional
+-------------------------------
+
+O NeanderWin é um simulador da máquina Neander, definida no livro
+do Raul F. Weber (UFRGS), Fundamentos de Arquitetura de Computadores,
+Ed. Sagra Luzzatto.  A máquina original foi extendida aqui para incluir 
+algumas instruções extras, incluindo a carga de dados imediatos
+no acumulador e operações de entrada e saida de dados.  Em nosso
+simulador estão mapeados apenas dois dispositivos: um teclado e um visor.
+
+1) Listagem geral das instruções
+
+Todas as instruções são de 8 bits, sendo que algumas possuem um
+operando de 8 bits adicional.  Em ambos os casos o primeiro byte 
+contém o código da operação nos 4 bits de mais alta ordem. Nas
+instruções com um operando, este ocupa o segundo byte.  
+
+Nota: Os 4 bits de mais baixa ordem do primeiro byte são reservados
+para futuras expansões.
+
+'NOP' código 0        
+        O comando NOP é usado apenas para gastar tempo.
+
+'STA ender' código 1
+        O comando STA guarda o acumulador na posição de memória
+        indicada pelo operando ender.
+
+'LDA ender' código 2
+        O comando LDA atribui ao acumulador o conteúdo da posição de
+        memória indicada pelo operando ender.
+
+'ADD ender' código 3
+        O comando ADD soma ao acumulador o conteúdo de uma posição de
+        memória indicada pelo operando ender.
+
+'SUB ender' código 4
+        O comando ADD soma ao acumulador o conteúdo de uma posição de
+        memória indicada pelo operando ender.
+
+'OR ender'  código 5
+        O comando OR realiza um "ou" lógico entre o acumulador e o
+        conteúdo de uma posição de memória indicada pelo operando
+        ender.
+
+'AND ender' código 6
+        O comando AND realiza um "e" lógico entre o acumulador e o
+        conteúdo de uma posição de memória indicada pelo operando
+        ender.
+
+'NOT ender' código 7
+        O comando NOT inverte os bits do acumulador ender.
+
+'JMP edner' código 8
+        O comando JMP (jump) desvia a execução do programa para
+        o endereço indicado pelo operando ender.
+
+'JN ender'  código 9
+        O comando JN (jump if negative) desvia a execução do programa
+        para o endereço indicado pelo operando ender, apenas quando a
+        última operação realizada produziu um valor com o bit 7 ligado
+       (negativo).
+
+'JZ ender'  código 10
+        O comando JZ (jump if zero) desvia a execução do programa
+        para o endereço indicado pelo operando ender, apenas quando a
+        última operação realizada produziu um valor zero.
+
+'JNZ ender'  código 11
+        O comando JNZ (jump if not zero) desvia a execução do programa
+        para o endereço indicado pelo operando ender, apenas quando a
+        última operação realizada produziu um valor diferente de
+        zero.
+
+'IN ender'  código 12
+        O comando IN (input) traz para o acumulador o valor lido
+        num dispositivo externo indicado pelo operando ender. 
+        Em nosso simulador os dispositivos são: chaves (endereço 0)
+        e o status de "dado disponível" das chaves (endereço 1).
+
+'OUT ender' código 13
+        O comando OUT (output) descarrega o conteúdo do acumulador em
+        um dispositivo externo indicado pelo operando ender.  Em nosso
+        simulador o único dispositivo disponível é um visor
+        (endereço 0).
+
+'LDI imed' código 14
+        O comando LDI (load immediate) carrega no acumulador o valor
+        dado pelo operando imed.
+
+'HLT' código 15
+        O comando HLT (halt) para a máquina.
+
+Modos de Endereçamento:
+
+- imediato
+         O segundo byte da instrução é o operando.
+         A única instrução que usa este modo de endereçamento é a LDI.
+- direto
+         O segundo byte da instrução é o endereço de memória do
+	 operando.
+- indireto
+         O segundo byte da instrução contém o endereço de memória onde
+         está o endereço do operando (ou seja, o segundo byte da
+         instrução é o endereço do ponteiro para o operando).
+	 Para indicar que um operando é indireto, deve-se precedê-lo
+         pela letra "@" (arrôba)
+
+2) Comentários no programa
+        Os comentários são começados por ponto e vírgula, e podem
+também ocorrer no final das linhas de instruções.
+
+3) Rótulos
+        Um rótulo é um nome dado à próxima posição de memória.
+        O nome é seguido por dois pontos.
+
+4) Pseudo Instruções:
+
+ORG ender
+        A pseudo-instrução ORG (origin) indica ao montador que a
+        próxima instrução será colocado na posição ender de memória.
+
+var EQU imed
+        A pseudo-instrução EQU (equate) atribui um nome (rótulo) a um
+	certo valor. Esse comando é frequentemente usado para
+        especificar variáveis que são posicionadas em um endereço
+        específico de memória.
+
+        Por exemplo para posicionar a variável x no endereço 100 use:
+        X EQU 100
+
+END ender
+        A pseudo-instrução END indica que o programa fonte acabou.
+        O operando ender é usado para pré-carregar o PC com o endereço
+        inicial de execução do programa.
+
+DS imed
+        A pseudo-instrução DS (define storage) reserva um número de
+        palavras na memória definido pelo valor imed.
+
+DB imed
+        A pseudo-instrução DB (define bytes) carrega esta palavra com o
+        valor dado pelo operando imed.
+
+5) Exemplos de representação de números
+
+Decimal:       30
+Binário:       00110000b
+Hexadecimal:   30h
+
+Nota:   Números hexadecimais maiores que 7fh devem ser precedidos
+        por um zero, p. ex.  0f3h
